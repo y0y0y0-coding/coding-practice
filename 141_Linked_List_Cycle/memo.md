@@ -124,4 +124,36 @@ class Solution:
     - `node = head` と`head`を直接操作していない
 - この関数が外部から呼び出されたときの挙動が気になったので調べる
     - Pythonでは関数内で引数の変数に別の値を代入しても、呼び出し側の変数には影響しない
-- `set()`の検索速度が早い理由を調べたいが今日はここまで
+- `set()`の検索速度が早い理由を調べる
+- `set()`の公式ドキュメントを読む
+    - https://docs.python.org/ja/3/builtins/stdtypes.html#set
+    - 集合の要素は ハッシュ可能 なものでなくてはならない
+        - ハッシュ可能(hashable)
+            - ハッシュ可能なオブジェクトは辞書のキーや集合のメンバーとして使えます。辞書や集合のデータ構造は内部でハッシュ値を使っているからです。
+            - Python のイミュータブルな組み込みオブジェクトは、ほとんどがハッシュ可能です。(リストや辞書のような) ミュータブルなコンテナはハッシュ不可能です。
+- `set()`の実装を読む
+    - PythonのC実装(CPython)
+        - https://github.com/python/cpython
+    - https://github.com/python/cpython/blob/main/Objects/setobject.c
+    - 3000行以上あるコードを読むのは人生で初めてで、正直どのように読んでいけばいいのかわからない。
+- `set()`の実装コードを読み解くことに苦戦したため、コードの見直し優先する
+- コメントをいただいたので、改めて書いてみる
+
+```
+class Solution:
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        visited = set()
+
+        node = head
+        while node is not None:
+            if node in visited:
+                return True
+
+            visited.add(node)
+            node = node.next
+
+        return False
+```
+
+- 10分以内に一回もエラーを出さずに書けた
+- レビューを依頼する
