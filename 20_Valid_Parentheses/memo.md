@@ -361,4 +361,152 @@ class Solution:
 ```
 
 - まだ、コードを書くことを優先して公式ドキュメントを読みたい気持ちになっていない。
+- 他の人のコードを読む
 
+#### 2人目
+- https://github.com/Satorien/LeetCode/pull/6 のStep1
+- stackを利用しないで実装している
+- 自分の解法と異なることもあり、初見では読み解くのが難しかった
+- 変数の定義に型ヒントを書いているのがわかりやすい
+- `while`で文字列を頭から末尾まで確認
+    - i番目とi+1番目、つまり隣同士でbracketのpairを見ている
+    - 隣同士のbracketが対応しているpairだったら、除外している
+    - 最後の`else`は`return False`でも問題ない？
+- 時間計算量と空間計算量を算出している。
+    - 時間計算量:処理にかかる時間(ステップ数)がどう増えるか
+    - 空間計算量:処理に使うメモリがどう増えるか
+- [コメント集](https://docs.google.com/document/d/11HV35ADPo9QxJOpJQ24FcZvtvioli770WWdZZDaLOfg/edit?tab=t.0#heading=h.1itsm36fdjze) も確認
+    - 計算量は、極限での定数倍を無視した振る舞いなので、計算量が直接根拠になることは絶対にありません。
+    - 計算量がよいこと自体には価値を見出さないほうがいいです。
+
+```
+class Solution:
+    def isValid(self, s: str) -> bool:
+        remaining_string: str = s
+        loop: bool = False
+        while remaining_string:
+            for i in range(len(remaining_string)-2):
+                if remaining_string[i] == "(" and remaining_string[i+1] == ")":
+                    remaining_string = remaining_string[:i] + remaining_string[i+2:]
+                    loop = True
+                    break
+                if remaining_string[i] == "{" and remaining_string[i+1] == "}":
+                    remaining_string = remaining_string[:i] + remaining_string[i+2:]
+                    loop = True
+                    break
+                if remaining_string[i] == "[" and remaining_string[i+1] == "]":
+                    remaining_string = remaining_string[:i] + remaining_string[i+2:]
+                    loop = True
+                    break
+            if loop:
+                loop = False
+                continue
+
+            if remaining_string != "()" and remaining_string != "{}" and remaining_string != "[]":
+                return False
+            else:
+                remaining_string = ""
+        return True
+```
+
+- 整理されたもの
+    - なるほど、bracketの抜き取り処理を`replace`でしている
+
+```
+class Solution:
+    def isValid(self, s: str) -> bool:
+        remaining_string: str = s
+        while remaining_string:
+            if "()" in remaining_string:
+                remaining_string = remaining_string.replace("()", "")
+            elif "{}" in remaining_string:
+                remaining_string = remaining_string.replace("{}","")
+            elif "[]" in remaining_string:
+                remaining_string = remaining_string.replace("[]","")
+            else:
+                return False
+        return True
+```
+
+- 次のstepでstackを利用した解法に修正していた。
+- 番兵とは？
+    - データの端にわざと置いておくダミーの値
+    - この場合、stackが空のチェックがいらなくなる
+- プッシュダウンオートマトンとは？
+    - https://www.jaist.ac.jp/~uehara/course/2006/ti113/09pda.pdf
+
+#### 3人目 bumbuboonさん
+- https://github.com/bumbuboon/Leetcode/blob/validParentheses/validParentheses.md
+- `if c in '({[':`
+- `return not stack`
+    - この記法は思いつかなかった
+
+```
+class Solution:
+    def isValid(self, s: str) -> bool:
+        stack = []
+        for c in s:
+            if c in '({[':
+                stack.append(c)
+            else:
+                if not stack or (c == ')' and stack[-1] != '(') or (c == '}' and stack[-1] != '{') or (c == ']' and stack[-1] != '['):
+                    return False
+                stack.pop()
+        return not stack 
+```
+
+- [チョムスキー階層、タイプ-2、文脈自由文法だから、プッシュダウンオートマトンで書ける](https://discordapp.com/channels/1084280443945353267/1201211204547383386/1202541275115425822)`
+    - 体系的に理解しておきたい。後ほど
+
+#### 4人目 hroc135さん
+- https://github.com/hroc135/leetcode/blob/20-valid-parentheses/20ValidParentheses.md
+- Step 2
+- スタックを`LifoQueue`で表現している
+    - `open_brackets = LifoQueue()`
+    - https://docs.python.org/ja/3/library/queue.html#queue-objects
+    - 名前にキューと書いてあるが、動きはLIFO、スタック（ややこしい。。） 
+- 生成AIに意見をもとめたら、単純にスタックを使うだけなら`list`か`deque`で十分とのこと
+- `deque`とは？
+    - https://docs.python.org/ja/3/library/collections.html#collections.deque
+    - スタックとキューを一般化したもの
+    - どちらの側からも append と pop が可能
+    - スレッドセーフでメモリ効率がよく、どちらの方向からもおよそ O(1) のパフォーマンスで実行できる
+        - スレッドセーフ：複数のスレッドから同時に使っても、データが壊れたり結果がおかしくなったりしない
+        - 職業柄MySQLやApacheを連想してしまう
+    - list オブジェクトでも同様の操作を実現できますが、これは高速な固定長の操作に特化されており、基礎のデータ表現形式のサイズと位置を両方変えるような`pop(0)`や`insert(0, v)`などの操作ではメモリ移動のために`O(n)`のコストを必要とします。
+        - 今回は終端の操作しないので`list`でもよさそう
+
+```
+from queue import LifoQueue
+
+
+class Solution:
+    def isValid(self, s: str) -> bool:
+        open_to_close = {
+            "(": ")",
+            "{": "}",
+            "[": "]"
+        }
+        open_brackets = LifoQueue()
+        
+        for i in range(len(s)):
+            if s[i] in open_to_close:
+                open_brackets.put(s[i])
+                continue
+            if open_brackets.empty():
+                return False
+            c = open_brackets.get()
+            if s[i] != open_to_close[c]:
+                return False
+        
+        return open_brackets.empty()
+```
+
+#### やること整理
+- 計算量について調べる
+    - 記載されている書籍などがあるか確認
+- プッシュダウンオートマトンついて調べる
+    - チョムスキー階層、タイプ-2、文脈自由文法だから、プッシュダウンオートマトンで書ける
+    - 正規言語、正規文法、有限オートマトン、と対比される
+    - 記載されている書籍などがあるか確認
+- `deque`のコードを読む
