@@ -510,3 +510,41 @@ class Solution:
     - 正規言語、正規文法、有限オートマトン、と対比される
     - 記載されている書籍などがあるか確認
 - `deque`のコードを読む
+
+
+### dequeの実装を読む
+#### 実装箇所を探す
+- dequeオブジェクトがどこにあるかを探す
+    - https://docs.python.org/ja/3/library/collections.html#deque-objects
+    - `class collections.deque([iterable[, maxlen]])`
+        - `deque`は、`collections`モジュールに属するクラス
+            - モジュールは関数・クラス・変数などをまとめた1つのファイル
+- `collections`モジュールのファイルがどこにあるかを探す
+    - `__file__`: モジュールが持つ属性。中身はファイルパス。
+        - https://docs.python.org/3.14/reference/datamodel.html#module.__file__
+
+```
+$ python3
+Python 3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import collections
+>>> print(collections.__file__)
+/usr/lib/python3.10/collections/__init__.py
+```
+
+- `/usr/lib/python3.10/collections/__init__.py` の中身を見る
+    - `_collections` モジュール。
+    - python3の実行ファイル自体に組み込まれているみたい。
+
+```
+try:
+    from _collections import deque
+except ImportError:
+    pass
+else:
+    _collections_abc.MutableSequence.register(deque)
+```
+
+- cpythonのリポジトリで「_collections」を検索
+    - https://github.com/python/cpython/blob/main/Modules/_collectionsmodule.c
+- dequeの実装やプッシュダウンオートマトンの調査は別リポジトリ進めます。 
