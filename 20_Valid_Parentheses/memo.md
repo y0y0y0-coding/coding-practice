@@ -548,3 +548,112 @@ else:
 - cpythonのリポジトリで「_collections」を検索
     - https://github.com/python/cpython/blob/main/Modules/_collectionsmodule.c
 - dequeの実装やプッシュダウンオートマトンの調査は別リポジトリ進めます。 
+
+
+### レビュー後の修正
+- 他の人のコードを読んで、改めて書き直してみたら`Wrong Answer`になった
+
+```
+class Solution:
+    def isValid(self, s:str) -> bool:
+        open_bracket_stack = []
+        open_to_close = {
+            '(' : ')',
+            '{' : '}',
+            '[' : ']'
+        }
+
+        for check_bracket in s:
+            if check_bracket in open_to_close:
+                open_bracket_stack.append(check_bracket)
+                print("#1")
+                print(open_bracket_stack)
+                continue
+
+            if len(open_bracket_stack) == 0:
+                print("#2")
+                print(open_bracket_stack)
+                return False
+
+            if check_bracket == open_to_close[open_bracket_stack[-1]]:
+                print("#3")
+                print(open_bracket_stack)
+                open_bracket_stack.pop()
+                continue
+
+        if len(open_bracket_stack) == 0:
+            return True
+        else:
+            return False
+
+# ローカルテスト
+if __name__ == "__main__":
+    sol = Solution()
+    #print(sol.isValid("()"))      # 期待値 True
+    #print(sol.isValid("()[]{}"))  # 期待値 True
+    #print(sol.isValid("(]"))      # 期待値 False
+    print(sol.isValid("(])"))      # 期待値 False
+```
+
+- 上記コードのローカルの出力結果
+
+```
+#1
+['(']
+#3
+['(']
+True
+```
+
+- close_bracketをstackに挿入してしまっている。
+    - ループの最後に`return False`を入れる必要がある
+- 退勤後、再度コードを書くもまた
+    - `Wrong Answer`
+
+```
+class Solution:
+    def isValid(self, s:str) -> bool:
+        open_brackets = []
+        open_to_close = {
+            '(' : ')',
+            '{' : '}',
+            '[' : ']'
+        }
+
+        for check_bracket in s:
+            if check_bracket in open_to_close:
+                open_brackets.append(check_bracket)
+                continue
+
+            if len(open_brackets) == 0:
+                return True
+
+            if check_bracket == open_to_close[open_brackets[-1]]:
+                open_brackets.pop()
+                continue
+
+            return False
+
+        if len(check_bracket) == 0:
+            return True
+        else:
+            return False
+```
+
+- 以下の箇所の`return True`→ `return False` 
+
+```
+            if len(open_brackets) == 0:
+                return True
+```
+
+- `check_bracket`の長さを確認している
+
+```
+       if len(open_brackets) == 0:
+            return True
+        else:
+            return False
+```
+
+- 根本的な考え直しが必要？
