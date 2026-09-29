@@ -13,7 +13,7 @@ class Solution:
                 open_bracket_stack.append(check_bracket)
                 continue
 
-            if len(open_bracket_stack) == 0:
+            if not open_bracket_stack:
                 return False
 
             if check_bracket == open_to_close[open_bracket_stack[-1]]:
@@ -22,10 +22,7 @@ class Solution:
 
             return False
 
-        if len(open_bracket_stack) == 0:
-            return True
-        else:
-            return False
+        return not open_bracket_stack
 
 # ローカルテスト
 if __name__ == "__main__":

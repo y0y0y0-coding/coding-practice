@@ -663,3 +663,35 @@ class Solution:
         - 提出を焦らない
         - 「仕事」のスタンスで
 - 3回連続、10分以内に書けた。レビューを依頼する。
+- コメントをいただく
+    - https://github.com/y0y0y0-coding/coding-practice/pull/2/changes#discussion_r4130393117
+    - https://github.com/y0y0y0-coding/coding-practice/pull/2/changes#discussion_r4130404902
+- 修正する
+
+```
+diff --git a/20_Valid_Parentheses/main.py b/20_Valid_Parentheses/main.py
+index a955fc9..b745889 100644
+--- a/20_Valid_Parentheses/main.py
++++ b/20_Valid_Parentheses/main.py
+@@ -13,7 +13,7 @@ class Solution:
+                 open_bracket_stack.append(check_bracket)
+                 continue
+
+-            if len(open_bracket_stack) == 0:
++            if not open_bracket_stack:
+                 return False
+
+             if check_bracket == open_to_close[open_bracket_stack[-1]]:
+@@ -22,10 +22,7 @@ class Solution:
+
+             return False
+
+-        if len(open_bracket_stack) == 0:
+-            return True
+-        else:
+-            return False
++        return not open_bracket_stack
+
+ # ローカルテスト
+ if __name__ == "__main__":
+```
