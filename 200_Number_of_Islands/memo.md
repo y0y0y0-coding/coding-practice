@@ -666,7 +666,56 @@ class Solution:
     - 掛け算になるのは、「外側の1回ごとに、内側が毎回フルで回る」場合
     - 積むときに`visited`へ記録しているので、同じマスが2回積まれることはない
     - つまりwhile スタック/キューの処理は毎回実行されない ←ここが躓いたポイント
-- 各セルについて処理マックス5回、全部のセルで5回やることはないけど、全体で考えて5Nは超えない
+- 各セルについて処理マックス5回、全部のセルで5回やることはないけど、全体で考えて5Nは超えない 
+
+## 最終的な回答
+- DFSとBFSを学びどちらも書けるようになったが、どちらの書き方を選ぶか。
+- 計算量が同じなら、リストを使って、シンプルに書けるDFSを最終的な回答とした
+    - 他に決めてがない
+
+```
+WATER = "0"
+DIRECTIONS = ((1, 0), (-1, 0), (0, 1), (0, -1))
 
 
-    
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+
+        num_rows = len(grid)
+        num_cols = len(grid[0])
+
+        num_islands = 0
+        visited = set()
+        cells_to_visit = []
+
+        for row in range(num_rows):
+            for col in range(num_cols):
+
+                if grid[row][col] == WATER:
+                    continue
+                if (row, col) in visited:
+                    continue
+
+                num_islands += 1
+                visited.add((row, col))
+                cells_to_visit.append((row, col))
+
+                while cells_to_visit:
+                    cur_row, cur_col = cells_to_visit.pop()
+                    for d_row, d_col in DIRECTIONS:
+                        next_row = cur_row + d_row
+                        next_col = cur_col + d_col
+
+                        if not (0 <= next_row < num_rows and 0 <= next_col < num_cols):
+                            continue
+                        if grid[next_row][next_col] == WATER:
+                            continue
+                        if (next_row, next_col) in visited:
+                            continue
+
+                        visited.add((next_row, next_col))
+                        cells_to_visit.append((next_row, next_col))
+
+        return num_islands
+
+```
