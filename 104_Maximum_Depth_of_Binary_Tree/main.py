@@ -15,16 +15,16 @@ class Solution:
             return 0
 
         maxdepth = 0
-        node_to_visit = [(root, 1)]
+        nodes = [(root, 1)]
 
-        while node_to_visit:
-            current_node, current_depth = node_to_visit.pop()
+        while nodes:
+            node, depth = nodes.pop()
 
-            if current_node.left is None and current_node.right is None:
-                maxdepth = max(maxdepth, current_depth)
-            if current_node.left is not None:
-                node_to_visit.append((current_node.left, current_depth + 1))
-            if current_node.right is not None:
-                node_to_visit.append((current_node.right, current_depth + 1))
+            if node.left is None and node.right is None:
+                maxdepth = max(maxdepth, depth)
+            if node.left is not None:
+                nodes.append((node.left, depth + 1))
+            if node.right is not None:
+                nodes.append((node.right, depth + 1))
 
         return maxdepth
