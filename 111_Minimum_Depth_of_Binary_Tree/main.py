@@ -14,16 +14,13 @@ class Solution:
         if root is None:
             return 0
 
-        frontier = [root]
-        mindepth = 0
+        frontier = deque([(root, 1)])
         while frontier:
-            depth += 1
-            next_frontier = []
-            for node in frontier:
-                if node.left is None and node.right is None:
-                    return depth
-                if node.left is not None:
-                    frontier.append(node.left)
-                if node.right is not None:
-                    frontier.append(node.right)
-            frontier = next_frontier
+            node, depth = frontier.popleft()
+
+            if node.left is None and node.right is None:
+                return depth
+            if node.left is not None:
+                frontier.append((node.left, depth + 1))
+            if node.right is not None:
+                frontier.append((node.right, depth + 1))

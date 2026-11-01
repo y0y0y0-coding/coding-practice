@@ -231,3 +231,89 @@ Internal dict size: 296
     - オブジェクトがメモリ上で使っているバイト数を返す関数
     - https://docs.python.org/ja/3/library/sys.html#sys.getsizeof
 
+### 2人目
+- https://github.com/tNita/arai60/pull/21
+- `current_depth = max(current_depth, depth)`　はなくてもよさそう。
+
+```Python
+class Solution:
+    def minDepth(self, root: TreeNode | None) -> int:
+        if root is None:
+            return 0
+        frontier = deque()
+        frontier.append((root, 1))
+        current_depth = 1
+        while len(frontier):
+            node, depth = frontier.popleft()
+            current_depth = max(current_depth, depth)
+            if node.left is None and node.right is None:
+                return current_depth
+            if node.right is not None:
+                frontier.append((node.right, current_depth + 1))
+            if node.left is not None:
+                frontier.append((node.left, current_depth + 1))
+        raise RuntimeError("ソースのバグにより最小深さを算出できませんでした。")
+```
+
+### 3人目
+- https://github.com/skypenguins/coding-practice/pull/16
+- テストケースを通過しないコード
+
+```
+class Solution:
+    def minDepth(self, root: Optional[TreeNode]) -> int:
+        if not root:
+            return 0
+        
+        visited_node = deque([root])
+        min_tree_depth = 1
+
+        while visited_node:
+            node = visited_node.popleft()
+            if node.left and node.right:
+                min_tree_depth += 1
+            if not node.left and not node.right:
+                return min_tree_depth
+            if node.left:
+                visited_node.append(node.left)
+            if node.right:
+                visited_node.append(node.right)
+```
+
+- 動かないのはわかるが、明確に言語化ができなかった。
+    - 同じ段に、左右両方に子を持つノードが2つあると、1段なのに +2 される
+
+### Step3
+- いくつかのコードを読んだが、自分が最初に書いた上から一段ずつ数えて、子がなかったらその段の深さを返すのが好み
+- 上から数えていくほうがわかりやすい
+- 最終的な回答
+
+```
+from collections import deque
+
+
+# Definition for a binary tree node.
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
+class Solution:
+    def minDepth(self, root: TreeNode | None) -> int:
+        if root is None:
+            return 0
+
+        frontier = deque([(root, 1)])
+        while frontier:
+            node, depth = frontier.popleft()
+
+            if node.left is None and node.right is None:
+                return depth
+            if node.left is not None:
+                frontier.append((node.left, depth + 1))
+            if node.right is not None:
+                frontier.append((node.right, depth + 1))
+
+```
