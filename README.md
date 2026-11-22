@@ -163,8 +163,8 @@ Python3
 
 ### Dynamic Programming
 - [ ] ~~Paint Fence (Easy)~~ (無料枠では解けないため対象外)
-- [ ] Longest Increasing Subsequence (Medium)
-- [ ] Maximum Subarray (Easy)
+- [x] Longest Increasing Subsequence (Medium)
+- [x] Maximum Subarray (Medium)
 - [ ] Unique Paths (Medium)
 - [ ] Unique Paths II (Medium)
 - [ ] House Robber (Easy)
